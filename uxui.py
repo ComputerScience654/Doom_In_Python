@@ -10,6 +10,7 @@ SCREEN_HEIGHT = 900
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+HIGHLIGHT = (255, 255, 0)  # สีไฮไลท์
 
 # Initialize screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -23,8 +24,20 @@ menu_options = ["Start Game", "Settings", "Quit"]
 settings_options = ["Volume", "Resolution", "Back"]
 
 # Load background image
-background_image = pygame.image.load('resources/textures/doom.jpg')
+background_image = pygame.image.load('resources/textures/doom1.jpg')
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+# Load icons
+start_icon = pygame.image.load('resources/icons/newgame.png')
+settings_icon = pygame.image.load('resources/icons/option.png')
+quit_icon = pygame.image.load('resources/icons/quit.png')
+title_image = pygame.image.load('resources/icons/logo.png')  # โหลดรูปชื่อเกม
+
+# Scale icons
+start_icon = pygame.transform.scale(start_icon, (200, 50))
+settings_icon = pygame.transform.scale(settings_icon, (200, 50))
+quit_icon = pygame.transform.scale(quit_icon, (200, 50))
+title_image = pygame.transform.scale(title_image, (600, 150))  # ปรับขนาดรูปชื่อเกม
 
 # Volume settings
 volume_levels = ["Mute", "Low", "Medium", "High"]
@@ -50,20 +63,21 @@ def main_menu(game_instance):
     selected = 0
     while True:
         screen.blit(background_image, (0, 0))
-        draw_text('DoomPython', font, WHITE, screen, 20, 20)
+        screen.blit(title_image, (SCREEN_WIDTH // 2 - title_image.get_width() // 2, SCREEN_HEIGHT // 2 - 300))  # วาดรูปชื่อเกม
 
         mx, my = pygame.mouse.get_pos()
 
-        button_1 = pygame.Rect(50, 100, 200, 50)
-        button_2 = pygame.Rect(50, 200, 200, 50)
-        button_3 = pygame.Rect(50, 300, 200, 50)
+        button_1 = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 50, 200, 200)
+        button_2 = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150, 200, 200)
+        button_3 = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 350, 200, 200)
 
         buttons = [button_1, button_2, button_3]
+        icons = [start_icon, settings_icon, quit_icon]
 
         for i, button in enumerate(buttons):
-            color = WHITE if i == selected else BLACK
-            pygame.draw.rect(screen, color, button)
-            draw_text(menu_options[i], font, BLACK, screen, 60, button.y + 10)
+            screen.blit(icons[i], (button.x, button.y))
+            if i == selected:
+                pygame.draw.rect(screen, HIGHLIGHT, (button.x, button.y + 200, 200, 10))  # ไฮไลท์ข้างใต้
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -95,25 +109,25 @@ def settings(game_instance):
     selected = 0
     while True:
         screen.blit(background_image, (0, 0))
-        draw_text('Settings', font, WHITE, screen, 20, 20)
+        draw_text('Settings', font, WHITE, screen, SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 200)
 
         mx, my = pygame.mouse.get_pos()
 
-        button_1 = pygame.Rect(50, 100, 200, 50)
-        button_2 = pygame.Rect(50, 200, 200, 50)
-        button_3 = pygame.Rect(50, 300, 200, 50)
+        button_1 = pygame.Rect(SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 - 50, 200, 50)
+        button_2 = pygame.Rect(SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 + 50, 200, 50)
+        button_3 = pygame.Rect(SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 + 150, 200, 50)
 
         buttons = [button_1, button_2, button_3]
 
         for i, button in enumerate(buttons):
             color = WHITE if i == selected else BLACK
             pygame.draw.rect(screen, color, button)
-            draw_text(settings_options[i], font, BLACK, screen, 60, button.y + 10)
+            draw_text(settings_options[i], font, BLACK, screen, button.x + 10, button.y + 10)
 
         if selected == 0:
-            draw_text(f'Volume: {volume_levels[current_volume]}', font, WHITE, screen, 300, 100)
+            draw_text(f'Volume: {volume_levels[current_volume]}', font, WHITE, screen, SCREEN_WIDTH // 2 + 100, SCREEN_HEIGHT // 2 - 50)
         elif selected == 1:
-            draw_text(f'Resolution: {resolutions[current_resolution][0]}x{resolutions[current_resolution][1]}', font, WHITE, screen, 300, 200)
+            draw_text(f'Resolution: {resolutions[current_resolution][0]}x{resolutions[current_resolution][1]}', font, WHITE, screen, SCREEN_WIDTH // 2 + 100, SCREEN_HEIGHT // 2 + 50)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
