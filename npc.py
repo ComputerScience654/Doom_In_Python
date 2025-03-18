@@ -1,6 +1,5 @@
 from sprite_object import *
-from random import randint, random
-
+from random import randint, random, choice
 
 class NPC(AnimatedSprite):
     def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(10.5, 5.5),
@@ -90,6 +89,8 @@ class NPC(AnimatedSprite):
         if self.health < 1:
             self.alive = False
             self.game.sound.npc_death.play()
+            self.game.object_handler.npc_positions.remove(self.map_pos)
+            self.game.check_spawn_boss()
 
     def run_logic(self):
         """ควบคุมตรรกะของ NPC"""
@@ -139,6 +140,10 @@ class NPC(AnimatedSprite):
 
         sin_a = math.sin(ray_angle)
         cos_a = math.cos(ray_angle)
+
+        # ตรวจสอบการหารด้วยศูนย์
+        if sin_a == 0 or cos_a == 0:
+            return False
 
         # horizontals
         y_hor, dy = (y_map + 1, 1) if sin_a > 0 else (y_map - 1e-6, -1)
@@ -221,6 +226,19 @@ class CyberDemonNPC(NPC):
         self.attack_damage = 15
         self.speed = 0.055
         self.accuracy = 0.25
+
+class Vasago(NPC):
+    def __init__(self, game, path='resources/sprites/npc/vasago/0.png', pos=(12.5, 7.0),
+                 scale=1.2, shift=0.04, animation_time=200):
+        super().__init__(game, path, pos, scale, shift, animation_time)
+        self.attack_dist = 7
+        self.health = 500
+        self.attack_damage = 20
+        self.speed = 0.04
+        self.accuracy = 0.3
+
+
+
 
 
 
