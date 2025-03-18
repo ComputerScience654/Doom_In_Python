@@ -11,7 +11,7 @@ from weapon import *
 from sound import *
 from pathfinding import *
 from uxui import *
-
+from npc import SoldierNPC, CacoDemonNPC, CyberDemonNPC, Vasago  # นำเข้า NPC ทั้งหมด
 
 class Game:
     def __init__(self):
@@ -35,10 +35,37 @@ class Game:
         self.weapon = Shotgun(self)  # Default weapon
         self.sound = Sound(self)
         self.pathfinding = PathFinding(self)
-        self.ammo = 10
-        self.health = 100
-        self.enemies_left = 5
+        self.boss_spawned = False
         pg.mixer.music.play(-1)
+        self.spawn_initial_npcs()  # สร้าง NPC เริ่มต้น
+
+    def spawn_initial_npcs(self):
+        def get_random_position():
+            while True:
+                pos = (randint(1, 20), randint(1, 20))
+                if pos not in self.map.world_map:
+                    return pos
+
+        # สร้าง SoldierNPC 10 ตัวสุ่มเกิดทั่วแมพ
+        for _ in range(10):
+            pos = get_random_position()
+            npc = SoldierNPC(self, pos=pos)
+            self.object_handler.npc_positions.add(npc.map_pos)
+            self.object_handler.npc_list.append(npc)
+
+        # สร้าง CacoDemonNPC 10 ตัวสุ่มเกิดทั่วแมพ
+        for _ in range(10):
+            pos = get_random_position()
+            npc = CacoDemonNPC(self, pos=pos)
+            self.object_handler.npc_positions.add(npc.map_pos)
+            self.object_handler.npc_list.append(npc)
+
+        # สร้าง CyberDemonNPC 3 ตัวสุ่มเกิดทั่วแมพ
+        for _ in range(3):
+            pos = get_random_position()
+            npc = CyberDemonNPC(self, pos=pos)
+            self.object_handler.npc_positions.add(npc.map_pos)
+            self.object_handler.npc_list.append(npc)
 
     def update(self):
         self.player.update()
@@ -52,7 +79,6 @@ class Game:
     def draw(self):
         self.object_renderer.draw()
         self.weapon.draw()
-       
 
     def check_events(self):
         self.global_trigger = False
@@ -72,6 +98,18 @@ class Game:
                     self.weapon = Rifle(self)
                 elif event.key == pg.K_4:
                     self.weapon = SuperShotgun(self)
+                elif event.key == pg.K_0:
+                    self.weapon = fist(self)
+                elif event.key == pg.K_9:
+                    self.weapon = bfg(self)
+
+    def check_spawn_boss(self):
+        if not self.boss_spawned and not self.object_handler.npc_positions:
+            boss_class = choice([Vasago])
+            boss = boss_class(self)
+            self.object_handler.npc_positions.add(boss.map_pos)  # Use add instead of append
+            self.object_handler.npc_list.append(boss)  # Add boss to npc_list
+            self.boss_spawned = True
 
     def run(self):
         while True:
