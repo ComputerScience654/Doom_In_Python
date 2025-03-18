@@ -4,7 +4,7 @@ from collections import deque
 import time
 
 class Weapon(AnimatedSprite):
-    def __init__(self, game, path='resources/sprites/weapon/shotgun/0.png', scale=0.4, animation_time=90):
+    def __init__(self, game, path='resources/sprites/weapon/fist/0.png', scale=0.4, animation_time=120):
         super().__init__(game=game, path=path, scale=scale, animation_time=animation_time)
         self.images = deque(
             [pg.transform.smoothscale(img, (self.image.get_width() * scale, self.image.get_height() * scale))
@@ -35,7 +35,7 @@ class Weapon(AnimatedSprite):
 
 class Shotgun(Weapon):
     def __init__(self, game):
-        super().__init__(game, path='resources/sprites/weapon/shotgun/0.png', scale=0.4, animation_time=90)
+        super().__init__(game, path='resources/sprites/weapon/shotgun/0.png', scale=0.4, animation_time=120)
         self.damage = 50
         self.shot_sound = pg.mixer.Sound('resources/sound/shotgun1.wav')  # โหลดเสียงปืน
 
@@ -54,8 +54,8 @@ class Shotgun(Weapon):
 
 class Plasmarifle(Weapon):
     def __init__(self, game):
-        super().__init__(game, path='resources/sprites/weapon/plasmarifle/0.png', scale=5, animation_time=100)
-        self.damage = 25
+        super().__init__(game, path='resources/sprites/weapon/plasmarifle/0.png', scale=5, animation_time=110)
+        self.damage = 100
         self.shot_sound = pg.mixer.Sound('resources/sound/plasmarifle.mp3')  # โหลดเสียงปืน
 
     def animate_shot(self):
@@ -73,8 +73,8 @@ class Plasmarifle(Weapon):
 
 class Rifle(Weapon):
     def __init__(self, game):
-        super().__init__(game, path='resources/sprites/weapon/rifle/0.png', scale=3, animation_time=80)
-        self.damage = 40
+        super().__init__(game, path='resources/sprites/weapon/rifle/0.png', scale=3, animation_time=150)
+        self.damage = 400
         self.shot_sound = pg.mixer.Sound('resources/sound/rifle.wav')  # โหลดเสียงปืน
 
     def animate_shot(self):
@@ -95,6 +95,44 @@ class SuperShotgun(Weapon):
         super().__init__(game, path='resources/sprites/weapon/supershotgun/0.png', scale=5, animation_time=120)
         self.damage = 150
         self.shot_sound = pg.mixer.Sound('resources/sound/supers.wav')  # โหลดเสียงปืน
+
+    def animate_shot(self):
+        if self.reloading:
+            self.game.player.shot = False
+            if self.animation_trigger:
+                self.images.rotate(-1)
+                self.image = self.images[0]
+                self.frame_counter += 1
+                if self.frame_counter == self.num_images:
+                    self.reloading = False
+                    self.frame_counter = 0
+                if self.frame_counter == 1:  # เล่นเสียงปืนเมื่อเริ่มอนิเมชั่น
+                    self.shot_sound.play()
+
+class fist(Weapon):
+    def __init__(self, game):
+        super().__init__(game, path='resources/sprites/weapon/fist/0.png', scale=4, animation_time=100)
+        self.damage = 25
+        self.shot_sound = pg.mixer.Sound('resources/sound/hitp.flac')  # โหลดเสียงปืน
+
+    def animate_shot(self):
+        if self.reloading:
+            self.game.player.shot = False
+            if self.animation_trigger:
+                self.images.rotate(-1)
+                self.image = self.images[0]
+                self.frame_counter += 1
+                if self.frame_counter == self.num_images:
+                    self.reloading = False
+                    self.frame_counter = 0
+                if self.frame_counter == 1:  # เล่นเสียงปืนเมื่อเริ่มอนิเมชั่น
+                    self.shot_sound.play()
+                    
+class bfg(Weapon):
+    def __init__(self, game):
+        super().__init__(game, path='resources/sprites/weapon/bfg/0.png', scale=4, animation_time=100)
+        self.damage = 5000
+        self.shot_sound = pg.mixer.Sound('resources/sound/bfgs.wav')  # โหลดเสียงปืน
 
     def animate_shot(self):
         if self.reloading:
